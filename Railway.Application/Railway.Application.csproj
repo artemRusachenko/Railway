@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Railway.Infrastructure\Railway.Infrastructure.csproj" />
+    <ProjectReference Include="..\Railway.Shared\Railway.Shared.csproj" />
+  </ItemGroup>
+
 </Project>
