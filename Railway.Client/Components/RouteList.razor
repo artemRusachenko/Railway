@@ -1,0 +1,58 @@
+﻿@using Railway.Shared.DTOs
+
+@inject NavigationManager Navigation
+
+@if (Routes is null)
+{
+    <p>Немає результатів для відображення.</p>
+}
+else if (!Routes.Any())
+{
+    <p>Маршрутів не знайдено.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Поїзд</th>
+                <th>Маршрут</th>
+                <th>Відправлення</th>
+                <th>Прибуття</th>
+                <th>Звідки</th>
+                <th>Куди</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var route in Routes)
+            {
+                <tr>
+                    <td>
+                        <a href="javascript:void(0)" @onclick="() => NavigateToCarriages(route)">
+                            @route.TrainNumber
+                        </a>
+                    </td>
+                    <td>@route.RouteName</td>
+                    <td>@route.DepatureDateTime.ToString("g")</td>
+                    <td>@route.ArrivalDateTime.ToString("g")</td>
+                    <td>@route.DepatureStationName</td>
+                    <td>@route.ArrivalStationName</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter]
+    public List<RouteBetweenStationsDTO>? Routes { get; set; }
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
+
+    private void NavigateToCarriages(RouteBetweenStationsDTO route)
+    {
+        var uri = $"carriages?trainId={route.TrainId}&departureStationId={route.DepatureStationId}&arrivalStationId={route.ArrivalStationId}";
+        NavigationManager.NavigateTo(uri);
+    }
+}

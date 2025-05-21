@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Railway.Domain.Carriages;
+using Railway.Domain.Routes;
 
-namespace Railway.Infrastructure.Persistence.Models;
+namespace Railway.Domain.Trains;
 
 public partial class Train
 {

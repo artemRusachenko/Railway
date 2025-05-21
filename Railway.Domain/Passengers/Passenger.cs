@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Railway.Domain.Tickets;
 
-namespace Railway.Infrastructure.Persistence.Models;
+namespace Railway.Domain.Passengers;
 
 public partial class Passenger
 {

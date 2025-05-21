@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Railway.Domain.Carriages;
 
-namespace Railway.Infrastructure.Persistence.Models;
+namespace Railway.Domain.CarriageTypes;
 
 public partial class CarriageType
 {

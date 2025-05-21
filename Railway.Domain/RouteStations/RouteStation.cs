@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Railway.Domain.Routes;
+using Railway.Domain.Stations;
 
-namespace Railway.Infrastructure.Persistence.Models;
+namespace Railway.Domain.RouteStations;
 
 public partial class RouteStation
 {

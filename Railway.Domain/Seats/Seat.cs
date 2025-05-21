@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Railway.Domain.Carriages;
+using Railway.Domain.Tickets;
 
-namespace Railway.Infrastructure.Persistence.Models;
+namespace Railway.Domain.Seats;
 
 public partial class Seat
 {

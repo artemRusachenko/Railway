@@ -1,0 +1,70 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+@page "/buy-ticket"
+@using Railway.Shared.Requests
+@using Railway.Client.Services
+@inject IRouteService SeatService
+@inject NavigationManager NavigationManager
+
+<h3>Купівля квитка</h3>
+
+@if (submitted)
+{
+    <div class="alert alert-success">Квиток успішно придбано!</div>
+    <button class="btn btn-primary mt-3" @onclick="@(() => NavigationManager.NavigateTo("/routes"))">На головну</button>
+}
+else
+{
+    <EditForm Model="ticket" OnValidSubmit="BuyTicketAsync">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            <label>Ім’я</label>
+            <InputText class="form-control" @bind-Value="ticket.FirstName" />
+        </div>
+
+        <div class="form-group mt-2">
+            <label>Прізвище</label>
+            <InputText class="form-control" @bind-Value="ticket.LastName" />
+        </div>
+
+        <button class="btn btn-success mt-3" type="submit">Купити квиток</button>
+    </EditForm>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger mt-3">@errorMessage</div>
+    }
+}
+
+@code {
+    [Parameter, SupplyParameterFromQuery] public int SeatId { get; set; }
+    [Parameter, SupplyParameterFromQuery] public int TrainId { get; set; }
+    [Parameter, SupplyParameterFromQuery] public int DepartureStationId { get; set; }
+    [Parameter, SupplyParameterFromQuery] public int ArrivalStationId { get; set; }
+
+    private BuyTicketRequest ticket = new();
+    private bool submitted = false;
+    private string? errorMessage;
+
+    protected override void OnInitialized()
+    {
+        ticket.SeatId = SeatId;
+        ticket.DepartureStationId = DepartureStationId;
+        ticket.ArrivalStationId = ArrivalStationId;
+        ticket.DepartureDate = DateTime.Today; // заміни на реальну дату, якщо потрібно
+    }
+
+    private async Task BuyTicketAsync()
+    {
+        var success = await SeatService.BuyTicketAsync(ticket);
+        if (success)
+        {
+            submitted = true;
+        }
+        else
+        {
+            errorMessage = "Не вдалося придбати квиток.";
+        }
+    }
+}

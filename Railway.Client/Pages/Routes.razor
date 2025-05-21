@@ -1,0 +1,23 @@
+﻿@page "/routes"
+@using Railway.Client.Services
+@using Railway.Shared.DTOs
+@using Railway.Shared.Requests
+@using Railway.Client.Components
+
+@inject IRouteService RouteService
+
+<h3>Пошук маршрутів</h3>
+
+<RouteSearch OnSearch="@SearchRoutesAsync" />
+<RouteList Routes="@foundRoutes" />
+<div style="margin-top: 100px;">
+    <TodaySchedule />
+</div>
+@code {
+    private List<RouteBetweenStationsDTO>? foundRoutes;
+
+    private async Task SearchRoutesAsync(RouteSearchRequest request)
+    {
+        foundRoutes = await RouteService.SearchRoutesAsync(request);
+    }
+}

@@ -1,0 +1,143 @@
+﻿@page "/carriages"
+@using Railway.Client.Services
+@using Railway.Shared.DTOs
+@using Railway.Shared.Requests
+@inject IRouteService TrainService
+@inject NavigationManager Navigation
+
+<h3 class="mt-3">Вагони поїзда</h3>
+
+@if (carriages is null)
+{
+    <p>Завантаження...</p>
+}
+else if (!carriages.Any())
+{
+    <p>Вагони не знайдено.</p>
+}
+else
+{
+    <table class="table table-bordered mt-3">
+        <thead>
+            <tr>
+                <th>№</th>
+                <th>Тип</th>
+                <th>Кількість місць</th>
+                <th>Вільно</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var carriage in carriages)
+            {
+                <tr @onclick="() => OnCarriageClick(carriage.CarriageId)" style="cursor:pointer">
+                    <td>@carriage.CarriageNumber</td>
+                    <td>@carriage.CarriageType</td>
+                    <td>@carriage.TotalSeats</td>
+                    <td>@carriage.FreeSeats</td>
+                </tr>
+                @if (selectedCarriageId == carriage.CarriageId && seats != null)
+                {
+                    <tr>
+                        <td colspan="4">
+                            @if (seats.Any())
+                            {
+                                <table class="table table-sm table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Місце №</th>
+                                            <th>Вільне</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var seat in seats)
+                                        {
+                                            <tr @onclick="() => GoToBuyPage(seat)" style="cursor: pointer;">
+                                                <td>@seat.SeatNumber</td>
+                                                <td>@(seat.IsFree ? "Так" : "Ні")</td>
+                                            </tr>
+
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                            else
+                            {
+                                <p>Місця не знайдені.</p>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "trainId")]
+    public int TrainId { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "departureStationId")]
+    public int DepartureStationId { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "arrivalStationId")]
+    public int ArrivalStationId { get; set; }
+
+    private List<TrainCarriagesDTO>? carriages;
+    private List<SeatInfoDTO>? seats;
+
+    private int? selectedCarriageId;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (TrainId != 0 && DepartureStationId != 0 && ArrivalStationId != 0)
+        {
+            carriages = await TrainService.GetCarriagesInfoAsync(TrainId, DepartureStationId, ArrivalStationId);
+            seats = null;
+            selectedCarriageId = null;
+        }
+        else
+        {
+            carriages = new List<TrainCarriagesDTO>();
+        }
+    }
+
+    private async Task OnCarriageClick(int carriageId)
+    {
+        if (selectedCarriageId == carriageId)
+        {
+            // Если кликнули повторно — скрыть места
+            selectedCarriageId = null;
+            seats = null;
+        }
+        else
+        {
+            selectedCarriageId = carriageId;
+
+            // Формируем запрос для мест
+            var seatRequest = new SeatRequest
+                {
+                    TrainId = TrainId,
+                    CarriageId = carriageId,
+                    DepartureStationId = DepartureStationId,
+                    ArrivalStationId = ArrivalStationId
+                };
+
+            seats = await TrainService.GetSeatsByCarriageAsync(seatRequest);
+        }
+    }
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
+
+    private void GoToBuyPage(SeatInfoDTO seat)
+    {
+        if (!seat.IsFree) return;
+
+        var uri = $"/buy-ticket?seatId={seat.SeatId}&trainId={TrainId}&departureStationId={DepartureStationId}&arrivalStationId={ArrivalStationId}";
+        NavigationManager.NavigateTo(uri);
+    }
+
+}

@@ -1,0 +1,59 @@
+﻿@page "/mytickets"
+@using Microsoft.AspNetCore.Components.Forms
+@using Railway.Client.Services
+@using Railway.Shared.DTOs
+@using Railway.Shared.Requests
+@inject IRouteService TicketService
+
+<h3 class="mb-4">Мої квитки</h3>
+
+<EditForm Model="@formModel" OnValidSubmit="LoadTicketsAsync">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label>Ім’я:</label>
+        <InputText class="form-control" @bind-Value="formModel.FirstName" />
+    </div>
+    <div class="mb-3">
+        <label>Прізвище:</label>
+        <InputText class="form-control" @bind-Value="formModel.LastName" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Показати квитки</button>
+</EditForm>
+
+@if (tickets != null && tickets.Any())
+{
+    <h4 class="mt-4">Знайдені квитки:</h4>
+    <ul class="list-group mt-2">
+        @foreach (var ticket in tickets)
+        {
+            <li class="list-group-item">
+                Квиток №@ticket.TicketId – @ticket.TrainNumber, місце @ticket.SeatNumber,
+                вагон @ticket.CarriageNumber (@ticket.CarriageType),
+                з @ticket.DepatureStation (@ticket.FromDateTime) до @ticket.ArrivalStation (@ticket.ToDateTime)
+            </li>
+        }
+    </ul>
+}
+else if (tickets != null)
+{
+    <p class="mt-4 text-muted">Квитків не знайдено.</p>
+}
+
+@code {
+    private class TicketFormModel
+    {
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+    }
+
+    private TicketFormModel formModel = new();
+    private List<PassengerTicketDTO>? tickets;
+
+    private async Task LoadTicketsAsync()
+    {
+        tickets = await TicketService.GetTicketsByNameAsync(formModel.FirstName, formModel.LastName);
+    }
+}

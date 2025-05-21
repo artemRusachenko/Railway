@@ -1,4 +1,8 @@
-﻿namespace Railway.Infrastructure.Persistence.Models;
+﻿using Railway.Domain.CarriageTypes;
+using Railway.Domain.Seats;
+using Railway.Domain.Trains;
+
+namespace Railway.Domain.Carriages;
 
 public partial class Carriage
 {

@@ -1,5 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Railway.Infrastructure.Persistence.Models;
+using Railway.Domain.Carriages;
+using Railway.Domain.CarriageTypes;
+using Railway.Domain.Passengers;
+using Railway.Domain.Routes;
+using Railway.Domain.RouteStations;
+using Railway.Domain.Seats;
+using Railway.Domain.Stations;
+using Railway.Domain.Tickets;
+using Railway.Domain.Trains;
 namespace Railway.Infrastructure.Persistence;
 
 public partial class AppDbContext : DbContext
@@ -30,6 +38,12 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<Ticket> Tickets { get; set; }
 
     public virtual DbSet<Train> Trains { get; set; }
+
+    public virtual DbSet<RouteBetweenStationSPResult> RouteBetweenStations { get; set; }
+    public virtual DbSet<GetPassengerTicketsSPResult> PassengerTickets { get; set; }
+    public virtual DbSet<GetStationScheduleForDaySPResult> StationsScheduleForDay { get; set; }
+    public virtual DbSet<GetStationsForRouteSPResult> StationsForRoute { get; set; }
+    public virtual DbSet<GetTrainCarriagesInfoSPResult> TrainCarriages { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -164,19 +178,25 @@ public partial class AppDbContext : DbContext
                 .HasConstraintName("FK__Train__RouteId__3F466844");
         });
 
-/*        modelBuilder.Entity<TrainSeatCarriageView>(entity =>
-        {
-            entity
-                .HasNoKey()
-                .ToView("TrainSeatCarriageView");
+        modelBuilder.Entity<RouteBetweenStationSPResult>()
+               .HasNoKey()
+               .ToView(null); 
+        
+        modelBuilder.Entity<GetPassengerTicketsSPResult>()
+               .HasNoKey()
+               .ToView(null);
 
-            entity.Property(e => e.CarriageTypeName)
-                .HasMaxLength(100)
-                .IsUnicode(false);
-            entity.Property(e => e.TrainNumber)
-                .HasMaxLength(10)
-                .IsUnicode(false);
-        });*/
+        modelBuilder.Entity<GetStationScheduleForDaySPResult>()
+           .HasNoKey()
+           .ToView(null);
+
+        modelBuilder.Entity<GetStationsForRouteSPResult>()
+           .HasNoKey()
+           .ToView(null);
+
+        modelBuilder.Entity<GetTrainCarriagesInfoSPResult>()
+           .HasNoKey()
+           .ToView(null);
 
         OnModelCreatingPartial(modelBuilder);
     }
